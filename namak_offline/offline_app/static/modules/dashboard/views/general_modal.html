@@ -1,0 +1,16 @@
+<div class="modal fade mainModal alertModal redAlertModal" id="{{ modal_id }}" data-backdrop="static"
+     data-keyboard="false" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modalHeader">
+                <h2 class="modalTitle">{{ modal_title }}</h2>
+                <a ng-show="{{ has_callback_button }}" data-ng-click="callbackbutton();$event.stopPropagation()" href=""
+                   class="mainButton greenButton">{{ functional_button_modal_text }}</a>
+                <a data-dismiss="modal" href="" class="mainButton redButton">{{ close_modal_text }}</a>
+            </div>
+            <div class="modal-body">
+                <p style="margin: 5px 15px 0 0">{{ modal_body }}</p>
+            </div>
+        </div>
+    </div>
+</div>

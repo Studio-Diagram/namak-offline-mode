@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        @font-face {
+            font-family: IRANSans;
+            font-style: normal;
+            font-weight: normal;
+            src: url('{% static 'fonts/ttf/IRANSansWeb.ttf' %}') format('truetype');
+        }
+
+        @font-face {
+            font-family: IRANSansNums;
+            font-style: normal;
+            font-weight: normal;
+            src: url('{% static 'fonts/ttf/IRANsansNUMs.ttf' %}') format('truetype');
+        }
+
+        .iranian-number {
+            font-family: IRANSansNums;
+        }
+
+        .tableWrapper {
+            background: white;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        body {
+            font-size: 1.3em;
+            font-family: 'IRANSans', tahoma, serif;
+            font-weight: normal;
+            direction: rtl;
+            width: 80mm;
+            margin: auto;
+            text-align: center;
+        }
+
+        .table td, .table th {
+
+            padding: .3rem;
+            vertical-align: top;
+            border-top: 2px solid black;
+
+        }
+
+        *, ::after, ::before {
+
+            box-sizing: border-box;
+
+        }
+
+        table {
+
+            border-collapse: collapse;
+
+        }
+
+        .table {
+
+            width: 100%;
+            background-color: transparent;
+
+        }
+
+        .table thead th {
+
+            vertical-align: bottom;
+
+        }
+
+        .small-text {
+            font-size: 0.7em;
+        }
+
+        .right-text {
+            text-align: right;
+        }
+
+        .left-text {
+            text-align: left;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .no-border {
+            border: none !important;
+        }
+
+        .item-numbers {
+            text-align: center;
+            border-right: 2px solid black;
+        }
+
+        .item-description {
+            text-align: right;
+            border-top: none !important;
+            border-bottom: 2px solid black;
+        }
+
+        .item-description-null-section {
+            border-top: none !important;
+            border-right: 2px solid black;
+            border-bottom: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+<br>
+<div class="tableWrapper">
+    <table class="table">
+        <tbody>
+        <tr>
+
+        </tr>
+        <tr>
+            <td class="small-text">نام میز</td>
+            <td class="small-text">نام مشتری</td>
+            <td class="small-text">نفرات</td>
+        </tr>
+        <tr>
+            <td class="no-border">{{ invoice_data.table_name }}</td>
+            <td class="no-border">{{ invoice_data.customer_name }}</td>
+            <td class="no-border iranian-number">{{ invoice_data.guest_numbers }}</td>
+        </tr>
+        <tr>
+            <td class="iranian-number">{{ invoice_data.date }}</td>
+            <td></td>
+            <td class="iranian-number">{{ invoice_data.time }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="tableWrapper">
+    <table class="table">
+        <thead class="small-text">
+        <tr>
+            <th class="right-text">نام</th>
+            <th class="center-text">تعداد</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in invoice_data.items %}
+            <tr>
+                <td class="right-text">{{ item.name }}</td>
+                <td class="iranian-number item-numbers">{{ item.numbers }}</td>
+            </tr>
+            {% if item.description %}
+                <tr>
+                    <td class="item-description">{{ item.description }}</td>
+                    <td class="item-description-null-section"></td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+
+
+</html>
