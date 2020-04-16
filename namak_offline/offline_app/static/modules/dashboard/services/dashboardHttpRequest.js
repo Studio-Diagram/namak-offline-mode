@@ -208,18 +208,16 @@ angular.module('dashboard')
                     'data': data
                 });
             },
-            'getMenuItemsWithCategories': function (data) {
+            'getMenuItemsWithCategories': function () {
                 return this.request({
-                    'method': "POST",
-                    'url': "/namak_offline/getMenuItemsWithCategories/",
-                    'data': data
+                    'method': "GET",
+                    'url': "/namak_offline/getMenuItemsWithCategories/"
                 });
             },
-            'getTables': function (data) {
+            'getTables': function () {
                 return this.request({
-                    'method': "POST",
-                    'url': "/namak_offline/getTables/",
-                    'data': data
+                    'method': "GET",
+                    'url': "/namak_offline/getTables/"
                 });
             },
             'addInvoiceSales': function (data) {
@@ -520,13 +518,6 @@ angular.module('dashboard')
                 return this.request({
                     'method': "POST",
                     'url': "/namak_offline/startInvoiceGame/",
-                    'data': data
-                });
-            },
-            'getCategoriesBaseOnKind': function (data) {
-                return this.request({
-                    'method': "POST",
-                    'url': "/namak_offline/getCategoriesBaseOnKind/",
                     'data': data
                 });
             },

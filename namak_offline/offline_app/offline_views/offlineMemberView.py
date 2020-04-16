@@ -17,6 +17,7 @@ UNATHENTICATED = 'لطفا ابتدا وارد شوید.'
 DUPLICATE_MEMBER_ENTRY = "شماره تلفن یا کارت تکراری است."
 MEMBER_NOT_FOUND = "عضوی یافت نشد."
 SAVING_REQUEST_FOR_ONLINE_SERVER_PROBLEM = "SAVING_REQUEST_FOR_ONLINE_SERVER_PROBLEM"
+METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"
 
 
 def add_member(request):
@@ -64,7 +65,7 @@ def add_member(request):
             )
             new_member.save()
 
-            if not create_new_request_for_online_api(BASE_ONLINE_SERVER_API_URL + "/api/addMember/", "POST", rec_data):
+            if not create_new_request_for_online_api(BASE_ONLINE_SERVER_API_URL + "api/addMember/", "POST", rec_data):
                 new_member.delete()
                 return JsonResponse({"response_code": 3, "error_msg": SAVING_REQUEST_FOR_ONLINE_SERVER_PROBLEM})
 
@@ -114,3 +115,34 @@ def search_member(request):
             })
         return JsonResponse({"response_code": 2, 'members': members})
     return JsonResponse({"response_code": 4, "error_msg": "GET REQUEST!"})
+
+
+def get_member(request):
+    if request.method != "POST":
+        return JsonResponse({"response_code": 4, "error_msg": METHOD_NOT_ALLOWED})
+    rec_data = json.loads(request.read().decode('utf-8'))
+    if rec_data.get('member_id'):
+        member_id = rec_data.get('member_id')
+        member = Member.objects.get(pk=member_id)
+        member_data = {
+            'id': member.pk,
+            'last_name': member.last_name,
+            'card_number': member.card_number
+        }
+        return JsonResponse({"response_code": 2, 'member': member_data})
+
+    if rec_data.get('card_number'):
+        card_number = rec_data.get('card_number')
+        card_number = card_number.replace("؟", "")
+        card_number = card_number.replace("٪", "")
+        card_number = card_number.replace("?", "")
+        card_number = card_number.replace("%", "")
+        member = Member.objects.filter(card_number=card_number).first()
+        if member:
+            member_data = {
+                'id': member.pk,
+                'last_name': member.last_name
+            }
+            return JsonResponse({"response_code": 2, 'member': member_data})
+        else:
+            return JsonResponse({"response_code": 3, 'error_msg': MEMBER_NOT_FOUND})

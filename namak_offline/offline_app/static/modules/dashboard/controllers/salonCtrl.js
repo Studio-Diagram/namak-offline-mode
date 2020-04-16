@@ -73,8 +73,7 @@ angular.module("dashboard")
             };
             $scope.get_today_cash();
             $scope.get_menu_items_with_categories_data($rootScope.user_data);
-            $scope.get_tables_data($rootScope.user_data);
-            $scope.get_shop_products();
+            $scope.get_tables_data();
             $scope.get_menu_item_data($rootScope.user_data);
             $window.onkeyup = function (event) {
                 if (event.keyCode === 27) {
@@ -288,7 +287,6 @@ angular.module("dashboard")
             dashboardHttpRequest.addInvoiceSales($scope.new_invoice_data)
                 .then(function (data) {
                     if (data['response_code'] === 2) {
-                        $scope.get_shop_products();
                         $scope.new_invoice_data.current_game.id = data['new_game_id'];
                         $scope.getAllTodayInvoices();
                         $scope.clear_invoice_sale();
@@ -341,7 +339,6 @@ angular.module("dashboard")
                 .then(function (data) {
                     if (data['response_code'] === 2) {
                         var new_invoice_id = data['new_invoice_id'];
-                        $scope.get_shop_products();
                         $scope.new_invoice_data.current_game.id = data['new_game_id'];
                         $scope.getAllTodayInvoices();
                         $scope.print_data(new_invoice_id, 'CASH');
@@ -465,7 +462,6 @@ angular.module("dashboard")
             dashboardHttpRequest.addInvoiceSales($scope.new_invoice_data)
                 .then(function (data) {
                     if (data['response_code'] === 2) {
-                        $scope.get_shop_products();
                         $scope.new_invoice_data.current_game.id = data['new_game_id'];
                         $scope.refreshInvoiceInPayModal(data['new_invoice_id']);
                         $scope.getAllTodayInvoices();
@@ -603,26 +599,6 @@ angular.module("dashboard")
                     $scope.will_delete_items.game.push(p_id);
                 }
             }
-        };
-
-        $scope.get_shop_products = function () {
-            var data = {
-                'username': $rootScope.user_data.username
-            };
-            dashboardHttpRequest.getShopProducts(data)
-                .then(function (data) {
-                    if (data['response_code'] === 2) {
-                        $scope.shop_products_original = data['shop_products'];
-                        $scope.shop_products = data['shop_products'];
-                    }
-                    else if (data['response_code'] === 3) {
-                        $scope.error_message = data['error_msg'];
-                        $scope.openErrorModal();
-                    }
-                }, function (error) {
-                    $scope.error_message = 500;
-                    $scope.openErrorModal();
-                });
         };
 
         $scope.changeItemShopNumber = function (item_index) {
@@ -763,6 +739,7 @@ angular.module("dashboard")
                     }
                 }
             }
+            $rootScope.is_page_loading = false;
         };
 
         $scope.check_table_has_invoice = function () {
@@ -917,7 +894,6 @@ angular.module("dashboard")
             dashboardHttpRequest.addInvoiceSales($scope.new_invoice_data)
                 .then(function (data) {
                     if (data['response_code'] === 2) {
-                        $scope.get_shop_products();
                         $scope.new_invoice_data.current_game.id = data['new_game_id'];
                         $scope.getAllTodayInvoices();
                         $scope.clear_invoice_sale();
@@ -936,7 +912,7 @@ angular.module("dashboard")
         };
 
         $scope.get_menu_items_with_categories_data = function (data) {
-            dashboardHttpRequest.getMenuItemsWithCategories(data)
+            dashboardHttpRequest.getMenuItemsWithCategories()
                 .then(function (data) {
                     if (data['response_code'] === 2) {
                         $scope.menu_items_with_categories = data['menu_items_with_categories'];
@@ -951,8 +927,8 @@ angular.module("dashboard")
                 });
         };
 
-        $scope.get_tables_data = function (data) {
-            dashboardHttpRequest.getTables(data)
+        $scope.get_tables_data = function () {
+            dashboardHttpRequest.getTables()
                 .then(function (data) {
                     if (data['response_code'] === 2) {
                         $scope.tables = data['tables'];
@@ -1000,12 +976,9 @@ angular.module("dashboard")
             dashboardHttpRequest.getMember(data)
                 .then(function (data) {
                     if (data['response_code'] === 2) {
-                        var first_name = data['member']['first_name'];
-                        var last_name = data['member']['last_name'];
                         $scope.new_invoice_data.member_id = data['member']['id'];
-                        $scope.new_invoice_data.member_name = first_name + " " + last_name;
-                        $scope.new_invoice_data.member_data = first_name + " " + last_name;
-
+                        $scope.new_invoice_data.member_name = data['member']['last_name'];
+                        $scope.new_invoice_data.member_data = data['member']['last_name'];
                     }
                     else if (data['response_code'] === 3) {
                         $scope.error_message = data['error_msg'];

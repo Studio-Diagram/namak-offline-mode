@@ -14,7 +14,6 @@ angular.module("dashboard")
             else {
                 $scope.get_today_cash();
             }
-            $scope.get_menu_categories_base_on_kind("BAR");
         };
 
         $scope.get_status_data = function () {
@@ -35,27 +34,6 @@ angular.module("dashboard")
                     }
                 }, function (error) {
                     $rootScope.is_page_loading = false;
-                    $scope.error_message = 500;
-                    $scope.openErrorModal();
-                });
-        };
-
-        $scope.get_menu_categories_base_on_kind = function (kind) {
-            var sending_data = {
-                'username': $rootScope.user_data.username,
-                'kind': kind
-            };
-            dashboardHttpRequest.getCategoriesBaseOnKind(sending_data)
-                .then(function (data) {
-                    if (data['response_code'] === 2) {
-                        if (kind === "BAR")
-                            $scope.bar_categories = data['categories'];
-                    }
-                    else if (data['response_code'] === 3) {
-                        $scope.error_message = data['error_msg'];
-                        $scope.openErrorModal();
-                    }
-                }, function (error) {
                     $scope.error_message = 500;
                     $scope.openErrorModal();
                 });

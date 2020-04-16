@@ -42,7 +42,7 @@ angular.module("dashboard")
                 };
                 $scope.config_clock();
                 $scope.get_today_for_reserve();
-                $scope.get_tables_data_for_main_page($rootScope.user_data);
+                $scope.get_tables_data_for_main_page();
                 $scope.get_working_time();
 
                 // Avoid Closing Drop down when clicking inside
@@ -380,8 +380,8 @@ angular.module("dashboard")
             };
 
 
-            $scope.get_tables_data_for_main_page = function (data) {
-                dashboardHttpRequest.getTables(data)
+            $scope.get_tables_data_for_main_page = function () {
+                dashboardHttpRequest.getTables()
                     .then(function (data) {
                         if (data['response_code'] === 2) {
                             $scope.tables = data['tables'];

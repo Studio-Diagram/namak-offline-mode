@@ -6,15 +6,18 @@ class Branch(models.Model):
     address = models.CharField(max_length=4 * 255, null=False, blank=False)
     start_working_time = models.TimeField(null=True)
     end_working_time = models.TimeField(null=True)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class Employee(models.Model):
     phone = models.CharField(max_length=30, null=False, blank=False)
     password = models.TextField(null=False, blank=False)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class TableCategory(models.Model):
     name = models.CharField(max_length=255, null=False)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
         return str(self.name)
@@ -23,6 +26,7 @@ class TableCategory(models.Model):
 class Table(models.Model):
     name = models.CharField(max_length=255, null=False)
     category = models.ForeignKey(to=TableCategory, on_delete=models.CASCADE, blank=True, null=True)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
         return str(self.name)
@@ -38,10 +42,12 @@ class Cash(models.Model):
     employee = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.CASCADE)
     branch = models.ForeignKey(to=Branch, on_delete=models.CASCADE)
     is_close = models.SmallIntegerField(default=0, null=False)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class Printer(models.Model):
     name = models.CharField(max_length=30, null=True, blank=True)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class MenuCategory(models.Model):
@@ -53,6 +59,7 @@ class MenuCategory(models.Model):
     name = models.CharField(max_length=30, null=True, blank=True)
     kind = models.CharField(max_length=50, choices=KIND, blank=False, null=False)
     list_order = models.IntegerField(default=0, blank=False, null=False)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
         return self.name
@@ -68,6 +75,7 @@ class MenuItem(models.Model):
     price = models.CharField(max_length=30, null=True, blank=True)
     is_delete = models.SmallIntegerField(default=0, null=False)
     menu_category = models.ForeignKey(MenuCategory, null=True, blank=False, on_delete=models.CASCADE)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class Member(models.Model):
@@ -86,6 +94,7 @@ class Game(models.Model):
     numbers = models.IntegerField(null=False)
     points = models.IntegerField(null=False, default=0)
     add_date = models.DateField(null=False)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
         return str(self.member.last_name + " " + str(self.start_time))
@@ -121,8 +130,10 @@ class InvoiceSales(models.Model):
     cash_desk = models.ForeignKey(Cash, null=True, blank=True, on_delete=models.CASCADE)
     branch = models.ForeignKey(to=Branch, on_delete=models.CASCADE)
     is_deleted = models.BooleanField(default=False)
+    delete_description = models.TextField(default="")
     is_do_not_want_order = models.BooleanField(default=False)
     game_state = models.CharField(max_length=50, choices=GAME_STATES, default='WAIT_GAME')
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
     def __str__(self):
         return "num: " + str(self.factor_number) + " total_p: " + str(self.total_price) + " Is Settled: " + str(
@@ -135,11 +146,13 @@ class InvoicesSalesToMenuItem(models.Model):
     numbers = models.IntegerField(null=False)
     description = models.CharField(max_length=60, blank=True)
     is_print = models.SmallIntegerField(default=0, null=False)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class InvoicesSalesToGame(models.Model):
     invoice_sales = models.ForeignKey(to=InvoiceSales, on_delete=models.CASCADE)
     game = models.ForeignKey(to=Game, on_delete=models.CASCADE)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class Reservation(models.Model):
@@ -157,11 +170,14 @@ class Reservation(models.Model):
     phone = models.CharField(max_length=255)
     reserve_state = models.CharField(max_length=50, choices=STATES)
     branch = models.ForeignKey(to=Branch, on_delete=models.CASCADE, null=True)
+    is_delete = models.SmallIntegerField(default=0, null=False)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class ReserveToTables(models.Model):
     reserve = models.ForeignKey(to=Reservation, on_delete=models.CASCADE)
     table = models.ForeignKey(to=Table, on_delete=models.CASCADE)
+    server_primary_key = models.IntegerField(null=False, blank=False)
 
 
 class SavedUsedAPIs(models.Model):

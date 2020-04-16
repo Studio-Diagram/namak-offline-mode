@@ -1,10 +1,10 @@
 angular.module("dashboard")
-    .controller("dashboardCtrl", function ($scope, $rootScope, $filter, $state, $interval, $http, $location, $timeout, dashboardHttpRequest, $window, namakServerHttpRequest) {
+    .controller("dashboardCtrl", function ($scope, $rootScope, $filter, $state, $interval, $http, $location, $timeout, dashboardHttpRequest, $window, namakServerHttpRequest, $transitions) {
         var initialize = function () {
             $rootScope.is_page_loading = true;
             $rootScope.user_data = {
                 "username": "",
-                "branch": ""
+                "branch": "1"
             };
             $rootScope.cash_data = {
                 'cash_id': 0
@@ -17,11 +17,6 @@ angular.module("dashboard")
             $scope.handler_id = "alertModal";
             $scope.closing_text = "بستن";
             $scope.has_callback_button = false;
-
-            $scope.myRightButton = function (bool) {
-                alert('!!! first function call!');
-            };
-
 
             $window.onkeyup = function (event) {
                 if (event.ctrlKey && event.keyCode === 49) {
@@ -54,10 +49,9 @@ angular.module("dashboard")
             }
         };
 
-        $rootScope.$on('$stateChangeStart',
-            function (event, toState, toParams, fromState, fromParams, options) {
-                $rootScope.is_page_loading = true;
-            });
+        $transitions.onBefore({}, function (transition) {
+            $rootScope.is_page_loading = true;
+        });
 
         $scope.isActive = function (path) {
             return ($location.path().substr(0, path.length) === path);
@@ -125,53 +119,28 @@ angular.module("dashboard")
                 });
         };
 
-        $scope.is_user_login = function (user_data) {
-            dashboardHttpRequest.checkLogin(user_data)
-                .then(function (data) {
-                    if (data['response_code'] === 2) {
-
-                    }
-                    else if (data['response_code'] === 3) {
-                        //$window.location.href = '/';
-                    }
-                }, function (error) {
-                    console.log(error);
-                });
-        };
-
-        $scope.log_out = function () {
-            dashboardHttpRequest.logOut($rootScope.user_data)
-                .then(function (data) {
-                    if (data['response_code'] === 2) {
-                        $window.location.href = '/';
-                        $rootScope.user_data = {
-                            "username": '',
-                            "branch": ''
-                        };
-                    }
-                    else if (data['response_code'] === 3) {
-                        $window.location.href = '/';
-                        $rootScope.user_data = {
-                            "username": '',
-                            "branch": ''
-                        };
-                    }
-                }, function (error) {
-                    console.log(error);
-                });
-        };
-
         $scope.get_today_cash = function () {
             dashboardHttpRequest.getTodayCash($rootScope.user_data)
                 .then(function (data) {
+                    $rootScope.is_page_loading = false;
                     if (data['response_code'] === 2) {
                         $rootScope.cash_data.cash_id = data['cash_id'];
                     }
                     else if (data['response_code'] === 3) {
-                        $rootScope.cash_data.cash_id = 0;
+                        var error_code = data['error_code'];
+                        if (error_code === "NO_CASH") {
+                            $state.go("cash_disable", {
+                                "state": "NO_CASH"
+                            });
+                        }
+                        else {
+                            $scope.error_message = data['error_message'];
+                            $scope.openErrorModal();
+                        }
                     }
                 }, function (error) {
-                    console.log(error);
+                    $scope.error_message = error;
+                    $scope.openErrorModal();
                 });
         };
 
@@ -391,7 +360,7 @@ angular.module("dashboard")
                         dashboardHttpRequest.sync_with_online()
                             .then(function (data) {
                                 if (data['response_code'] === 2) {
-                                    $window.location.href = "http://127.0.0.1:9001/dashboard/"
+                                    $window.location.href = "http://127.0.0.1:9001/dashboard"
                                 }
                             }, function (error) {
                                 console.log(error);
