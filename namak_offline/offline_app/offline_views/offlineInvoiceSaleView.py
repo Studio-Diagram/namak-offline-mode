@@ -25,6 +25,11 @@ DO_NOT_WANT_GAME = "بازی نمی‌خواهد"
 NO_SHOP_PRODUCTS_IN_STOCK = "محصول فروشی در انبار نیست."
 WAIT_FOR_SETTLE = "منتظر تسویه"
 PRICE_PER_POINT_IN_GAME = 5000
+PRICE_PER_HOUR_IN_GAME = 80000
+SECONDS_PER_POINT = 225
+CHUNKS_PER_HOUR = 16
+GUEST_LAST_NAME = "مهمان"
+GUEST_FIRST_NAME = "مهمان"
 
 
 def get_invoice_sale_total_price(invoice_id):
@@ -131,7 +136,7 @@ def get_all_today_invoices(request):
 
         all_invoices_list.append({
             "invoice_id": invoice.pk,
-            "guest_name": invoice.member.last_name,
+            "guest_name": invoice.member.get_full_name() if invoice.member else GUEST_LAST_NAME,
             "table_name": invoice.table.name,
             "guest_nums": invoice.guest_numbers,
             "total_price": invoice.total_price,
@@ -159,10 +164,10 @@ def get_invoice(request):
         'invoice_sales_id': invoice_object.pk,
         'table_id': invoice_object.table.pk,
         'table_name': invoice_object.table.name,
-        'member_id': invoice_object.member.pk,
+        'member_id': invoice_object.member.pk if invoice_object.member else 0,
         'guest_numbers': invoice_object.guest_numbers,
-        'member_name': invoice_object.member.last_name,
-        'member_data': invoice_object.member.last_name,
+        'member_name': invoice_object.member.get_full_name() if invoice_object.member else GUEST_LAST_NAME,
+        'member_data': invoice_object.member.get_full_name() if invoice_object.member else GUEST_LAST_NAME,
         'current_game': {
             'id': 0,
             'numbers': 0,
@@ -292,10 +297,8 @@ def create_new_invoice_sales(request):
     if tip == "" or discount == "":
         return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
 
-    if member_id == 0:
-        # HardCode for Guest member
-        member_obj = Member.objects.filter(card_number="0000")
-    else:
+    member_obj = None
+    if member_id:
         member_obj = Member.objects.get(pk=member_id)
 
     table_obj = Table.objects.get(pk=table_id)
@@ -433,7 +436,7 @@ def end_current_game(request):
 
     t = timedelta_end - timedelta_start
     point = int(round(t.total_seconds() / 225))
-    if game_object.member.card_number == "0000":
+    if not game_object.member:
         if point % 16 != 0:
             point = (int(point / 16) + 1) * 16
     game_numbers = game_object.numbers

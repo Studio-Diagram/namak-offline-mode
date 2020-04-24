@@ -86,9 +86,13 @@ class Member(models.Model):
     def __str__(self):
         return self.last_name
 
+    def get_full_name(self):
+        full_name = '%s' % self.last_name
+        return full_name.strip()
+
 
 class Game(models.Model):
-    member = models.ForeignKey(to=Member, on_delete=models.CASCADE)
+    member = models.ForeignKey(to=Member, on_delete=models.CASCADE, null=True, blank=True)
     start_time = models.TimeField(null=False)
     end_time = models.TimeField(null=True, default="00:00:00")
     numbers = models.IntegerField(null=False)
@@ -124,7 +128,7 @@ class InvoiceSales(models.Model):
     guest_numbers = models.IntegerField(null=False)
     is_settled = models.IntegerField(null=False, default=0)
     total_price = models.FloatField(default=0)
-    member = models.ForeignKey(to=Member, on_delete=models.CASCADE, default=0)
+    member = models.ForeignKey(to=Member, on_delete=models.CASCADE, default=0, null=True, blank=True)
     table = models.ForeignKey(to=Table, on_delete=models.CASCADE)
     ready_for_settle = models.BooleanField(default=False)
     cash_desk = models.ForeignKey(Cash, null=True, blank=True, on_delete=models.CASCADE)

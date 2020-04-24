@@ -271,7 +271,9 @@ def sync_invoice_sale_with_server():
         for item in json_data['invoices']:
             branch_object = Branch.objects.get(server_primary_key=item['branch_id'])
             cash_object = Cash.objects.get(server_primary_key=item['cash_id'])
-            member_object = Member.objects.get(server_primary_key=item['member_id'])
+            member_object = None
+            if item['member_id']:
+                member_object = Member.objects.get(server_primary_key=item['member_id'])
             table_object = Table.objects.get(server_primary_key=item['table_id'])
             new_invoice = InvoiceSales(
                 factor_number=item['factor_number'],
@@ -569,10 +571,8 @@ def create_new_invoice_sales(request):
     if tip == "" or discount == "":
         return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
 
-    if member_id == 0:
-        # HardCode for Guest member
-        member_obj = Member.objects.filter(card_number="0000")
-    else:
+    member_obj = None
+    if member_id:
         member_obj = Member.objects.get(server_primary_key=member_id)
 
     table_obj = Table.objects.get(server_primary_key=table_id)
