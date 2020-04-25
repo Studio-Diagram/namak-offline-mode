@@ -820,15 +820,36 @@ def delete_invoice(request):
     return JsonResponse({"response_code": 2})
 
 
-sync_members_with_server()
-sync_menu_category_with_server()
-sync_menu_item_with_server()
-sync_printer_with_server()
-sync_printer_to_category_with_server()
-sync_table_category_with_server()
-sync_table_with_server()
-sync_employee_with_server()
-sync_branch_with_server()
-sync_cash_with_server()
-sync_invoice_sale_with_server()
-sync_reserve_with_server()
+@csrf_exempt
+def settle_invoice_sale(request):
+    if request.method != "POST":
+        return JsonResponse({"response_code": 4, "error_msg": "GET REQUEST!"})
+
+    rec_data = json.loads(request.read().decode('utf-8'))
+    invoice_id = rec_data.get('invoice_id')
+    cash = rec_data.get('cash')
+    pos = rec_data.get('card')
+    if not invoice_id or (not pos and not pos == 0) or (not cash and not cash == 0):
+        return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
+    invoice_object = InvoiceSales.objects.get(server_primary_key=invoice_id)
+    invoice_object.is_settled = 1
+    invoice_object.cash = int(cash)
+    invoice_object.pos = int(pos)
+    invoice_object.settle_time = datetime.now()
+    invoice_object.save()
+
+    return JsonResponse({"response_code": 2})
+
+
+# sync_members_with_server()
+# sync_menu_category_with_server()
+# sync_menu_item_with_server()
+# sync_printer_with_server()
+# sync_printer_to_category_with_server()
+# sync_table_category_with_server()
+# sync_table_with_server()
+# sync_employee_with_server()
+# sync_branch_with_server()
+# sync_cash_with_server()
+# sync_invoice_sale_with_server()
+# sync_reserve_with_server()

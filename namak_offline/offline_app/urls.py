@@ -13,4 +13,5 @@ urlpatterns = [
     path('print_after_save/', views.print_after_save),
     path('delete_items/', views.delete_items),
     path('delete_invoice/', views.delete_invoice),
+    path('settle_invoice_sale/', views.settle_invoice_sale),
 ]

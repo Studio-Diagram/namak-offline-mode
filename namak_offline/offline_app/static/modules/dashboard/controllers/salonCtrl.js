@@ -217,7 +217,8 @@ angular.module("dashboard")
                 $scope.ready_for_settle(invoice_id);
                 var sending_data = {
                     'is_customer_print': 1,
-                    'invoice_id': invoice_id
+                    'invoice_id': invoice_id,
+                    'location_url': "https://127.0.0.1:8000/"
                 };
                 $http({
                     method: 'POST',
@@ -236,7 +237,8 @@ angular.module("dashboard")
                 var sending_data = {
                     'is_customer_print': 0,
                     'invoice_id': invoice_id,
-                    'invoice_data': invoice_data
+                    'invoice_data': invoice_data,
+                    'location_url': "https://127.0.0.1:8000/"
                 };
                 $http({
                     method: 'POST',

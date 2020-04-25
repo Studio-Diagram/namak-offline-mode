@@ -30,4 +30,5 @@ urlpatterns = [
     path('printAfterSave/', offlineInvoiceSaleView.print_after_save),
     path('deleteInvoiceSale/', offlineInvoiceSaleView.delete_invoice),
     path('deleteItems/', offlineInvoiceSaleView.delete_items),
+    path('settleInvoiceSale/', offlineInvoiceSaleView.settle_invoice_sale),
 ]

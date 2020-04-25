@@ -553,3 +553,23 @@ def delete_invoice(request):
 
     invoice_obj.save()
     return JsonResponse({"response_code": 2})
+
+
+def settle_invoice_sale(request):
+    if request.method != "POST":
+        return JsonResponse({"response_code": 4, "error_msg": "GET REQUEST!"})
+
+    rec_data = json.loads(request.read().decode('utf-8'))
+    invoice_id = rec_data.get('invoice_id')
+    cash = rec_data.get('cash')
+    pos = rec_data.get('card')
+    if not invoice_id or (not pos and not pos == 0) or (not cash and not cash == 0):
+        return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
+    invoice_object = InvoiceSales.objects.get(pk=invoice_id)
+    invoice_object.is_settled = 1
+    invoice_object.cash = int(cash)
+    invoice_object.pos = int(pos)
+    invoice_object.settle_time = datetime.now()
+    invoice_object.save()
+
+    return JsonResponse({"response_code": 2})

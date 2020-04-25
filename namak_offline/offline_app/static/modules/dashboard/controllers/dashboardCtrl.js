@@ -369,7 +369,7 @@ angular.module("dashboard")
                 }, function (error) {
                     console.log(error);
                 });
-        }, 10000);
+        }, 1000000000);
 
 
         initialize();
