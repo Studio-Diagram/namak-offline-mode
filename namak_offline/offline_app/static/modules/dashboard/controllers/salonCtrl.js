@@ -177,6 +177,15 @@ angular.module("dashboard")
                     }
                     else if (data['response_code'] === 3) {
                         $rootScope.cash_data.cash_id = 0;
+                        if (data['error_code'] === "NO_CASH") {
+                            $state.go("cash_disable", {
+                                "state": "NO_CASH"
+                            });
+                        }
+                        else {
+                            $scope.error_message = data['error_message'];
+                            $scope.openErrorModal();
+                        }
                     }
                 }, function (error) {
                     $rootScope.is_page_loading = false;

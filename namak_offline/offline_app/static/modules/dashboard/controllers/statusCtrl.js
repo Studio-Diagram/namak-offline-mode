@@ -1,5 +1,5 @@
 angular.module("dashboard")
-    .controller("statusCtrl", function ($scope, $interval, $rootScope, $filter, $http, $timeout, $window, dashboardHttpRequest) {
+    .controller("statusCtrl", function ($scope, $interval, $rootScope, $filter, $http, $timeout, $window, dashboardHttpRequest, $state) {
         var initialize = function () {
             $scope.night_report_inputs = {
                 "income_report": 0,
@@ -143,7 +143,7 @@ angular.module("dashboard")
                 .then(function (data) {
                     if (data['response_code'] === 2) {
                         $scope.print_night_report();
-                        $scope.log_out();
+                        $window.location.href = "/dashboard";
                     }
                     else if (data['response_code'] === 3) {
                         $scope.error_message = data['error_msg'];
@@ -151,29 +151,6 @@ angular.module("dashboard")
                     }
                 }, function (error) {
                     $scope.error_message = error;
-                    $scope.openErrorModal();
-                });
-        };
-
-        $scope.log_out = function () {
-            dashboardHttpRequest.logOut($rootScope.user_data)
-                .then(function (data) {
-                    if (data['response_code'] === 2) {
-                        $window.location.href = '/';
-                        $rootScope.user_data = {
-                            "username": '',
-                            "branch": ''
-                        };
-                    }
-                    else if (data['response_code'] === 3) {
-                        $window.location.href = '/';
-                        $rootScope.user_data = {
-                            "username": '',
-                            "branch": ''
-                        };
-                    }
-                }, function (error) {
-                    $scope.error_message = 500;
                     $scope.openErrorModal();
                 });
         };
@@ -190,8 +167,8 @@ angular.module("dashboard")
             }).then(function successCallback(response) {
 
             }, function errorCallback(response) {
-                $scope.error_message = "Printer Server not connected.";
-                $scope.openErrorModal();
+                // $scope.error_message = "Printer Server not connected.";
+                // $scope.openErrorModal();
             });
         };
 

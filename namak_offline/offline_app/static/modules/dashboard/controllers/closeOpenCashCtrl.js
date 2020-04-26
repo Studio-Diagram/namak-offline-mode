@@ -21,38 +21,11 @@ angular.module("dashboard")
             })(jQuery);
         };
 
-        $scope.log_out = function () {
-            dashboardHttpRequest.logOut($rootScope.user_data)
-                .then(function (data) {
-                    if (data['response_code'] === 2) {
-                        $window.location.href = '/';
-                        $rootScope.user_data = {
-                            "username": '',
-                            "branch": ''
-                        };
-                    }
-                    else if (data['response_code'] === 3) {
-                        $window.location.href = '/';
-                        $rootScope.user_data = {
-                            "username": '',
-                            "branch": ''
-                        };
-                    }
-                }, function (error) {
-                    console.log(error);
-                });
-        };
-
-
         $scope.close_cash = function () {
-            var sending_data = {
-                'branch_id': $rootScope.user_data.branch,
-                'username': $rootScope.user_data.username
-            };
-            dashboardHttpRequest.closeCash(sending_data)
+            dashboardHttpRequest.closeCash($rootScope.user_data)
                 .then(function (data) {
                     if (data['response_code'] === 2) {
-                        $scope.log_out();
+                        $window.close();
                     }
                     else if (data['response_code'] === 3) {
                         $scope.error_message = data['error_msg'];

@@ -31,4 +31,6 @@ urlpatterns = [
     path('deleteInvoiceSale/', offlineInvoiceSaleView.delete_invoice),
     path('deleteItems/', offlineInvoiceSaleView.delete_items),
     path('settleInvoiceSale/', offlineInvoiceSaleView.settle_invoice_sale),
+    path('closeCash/', offlineCashView.close_cash),
+    path('openCash/', offlineCashView.open_cash)
 ]

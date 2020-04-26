@@ -13,27 +13,7 @@ angular.module("dashboard")
                 .then(function (data) {
                     if (data['response_code'] === 2) {
                         $scope.get_today_cash();
-                        $state.go("cash_manager");
-                    }
-                    else if (data['response_code'] === 3) {
-                        $scope.error_message = data['error_message'];
-                        $scope.openErrorModal();
-                    }
-                }, function (error) {
-                    $scope.error_message = error;
-                    $scope.openErrorModal();
-                });
-        };
-
-        $scope.close_then_open_cash = function () {
-            var sending_data = {
-                'branch_id': $rootScope.user_data.branch,
-                'username': $rootScope.user_data.username
-            };
-            dashboardHttpRequest.closeCash(sending_data)
-                .then(function (data) {
-                    if (data['response_code'] === 2) {
-                        $scope.open_cash();
+                        $state.go("cash_manager.salon");
                     }
                     else if (data['response_code'] === 3) {
                         $scope.error_message = data['error_message'];
@@ -62,6 +42,7 @@ angular.module("dashboard")
         $scope.get_today_cash = function () {
             dashboardHttpRequest.getTodayCash($rootScope.user_data)
                 .then(function (data) {
+                    $rootScope.is_page_loading = false;
                     if (data['response_code'] === 2) {
                         $rootScope.cash_data.cash_id = data['cash_id'];
                     }

@@ -1,11 +1,31 @@
 angular.module("dashboard")
     .controller("dashboardCtrl", function ($scope, $rootScope, $filter, $state, $interval, $http, $location, $timeout, dashboardHttpRequest, $window, namakServerHttpRequest, $transitions) {
         var initialize = function () {
+            if ($location.search().user) {
+                localStorage.user = JSON.stringify($location.search().user);
+                $rootScope.user_data = {
+                    "username": JSON.parse(localStorage.user),
+                    "branch": "1"
+                };
+            }
+            else {
+                console.log("No Username Provided in url!");
+                if (!localStorage.user) {
+                    console.log("No Username Provided in url or storage!");
+                    $rootScope.user_data = {
+                        "username": "",
+                        "branch": "1"
+                    };
+                }
+                else {
+                    $rootScope.user_data = {
+                        "username": JSON.parse(localStorage.user),
+                        "branch": "1"
+                    };
+                }
+            }
             $rootScope.is_page_loading = true;
-            $rootScope.user_data = {
-                "username": "",
-                "branch": "1"
-            };
+
             $rootScope.cash_data = {
                 'cash_id': 0
             };
@@ -100,11 +120,7 @@ angular.module("dashboard")
         };
 
         $scope.close_cash = function () {
-            var sending_data = {
-                'branch_id': $rootScope.user_data.branch,
-                'username': $rootScope.user_data.username
-            };
-            dashboardHttpRequest.closeCash(sending_data)
+            dashboardHttpRequest.closeCash($rootScope.user_data)
                 .then(function (data) {
                     if (data['response_code'] === 2) {
                         $scope.closeCloseCashModal();
@@ -369,7 +385,7 @@ angular.module("dashboard")
                 }, function (error) {
                     console.log(error);
                 });
-        }, 1000000000);
+        }, 10000);
 
 
         initialize();
