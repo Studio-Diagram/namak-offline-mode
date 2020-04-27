@@ -14,4 +14,6 @@ urlpatterns = [
     path('delete_items/', views.delete_items),
     path('delete_invoice/', views.delete_invoice),
     path('settle_invoice_sale/', views.settle_invoice_sale),
+    path('close_cash/', views.close_cash),
+    path('open_cash/', views.open_cash),
 ]

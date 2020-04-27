@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.http import JsonResponse
 from offline_app.models import *
-import requests, json, jdatetime
+import requests, json, jdatetime, datetime
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
 
@@ -13,6 +13,11 @@ DUPLICATE_MEMBER_ENTRY = "DUPLICATE_MEMBER_ENTRY"
 METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"
 TIME_NOT_IN_CORRECT_FORMAT = 'زمان را به حالت درستی وارد کنید.'
 PRICE_PER_POINT_IN_GAME = 5000
+DUPLICATE_CASH = 'دو صندوق باز وجود دارد. با تیم فنی تماس بگیرید.'
+NO_CASH = 'صندوق بازی وجود ندارد.'
+OLD_CASH = 'انقضای صندوق گذشته است.'
+UNSETTLED_INVOICE = "فاکتور تسویه نشده وجود دارد."
+BRANCH_ID = 1
 
 
 def request_handler(method, url, payload=None):
@@ -26,7 +31,7 @@ def request_handler(method, url, payload=None):
 
 def sync_members_with_server():
     Member.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/member/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/member/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -107,7 +112,7 @@ def create_member(request):
 # Menu Category Sync
 def sync_menu_category_with_server():
     MenuCategory.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/menu_category/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/menu_category/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -123,7 +128,7 @@ def sync_menu_category_with_server():
 # Menu Item Sync
 def sync_menu_item_with_server():
     MenuItem.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/menu_item/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/menu_item/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -141,7 +146,7 @@ def sync_menu_item_with_server():
 # Printer Sync
 def sync_printer_with_server():
     Printer.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/printer/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/printer/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -156,7 +161,7 @@ def sync_printer_with_server():
 # Printer to Category Sync
 def sync_printer_to_category_with_server():
     PrinterToCategory.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/printer_to_category/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/printer_to_category/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -174,7 +179,7 @@ def sync_printer_to_category_with_server():
 # Table Category Sync
 def sync_table_category_with_server():
     TableCategory.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/table_category/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/table_category/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -190,7 +195,7 @@ def sync_table_category_with_server():
 # Table Sync
 def sync_table_with_server():
     Table.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/table/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/table/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -207,7 +212,7 @@ def sync_table_with_server():
 # Employee Sync
 def sync_employee_with_server():
     Employee.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/employee/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/employee/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -223,7 +228,7 @@ def sync_employee_with_server():
 # Branch Sync
 def sync_branch_with_server():
     Branch.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/branch/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/branch/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -240,7 +245,7 @@ def sync_branch_with_server():
 # Cash Sync
 def sync_cash_with_server():
     Cash.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/cash/0/")
+    response = request_handler("GET", BASE_URL + "api/offline/list/cash/0/%d/" % BRANCH_ID)
     json_data = response[0]
     status_code = response[1]
 
@@ -790,7 +795,9 @@ def delete_items(request):
             menu_item_id = item_number_pair[0]
             menu_item_numbers = item_number_pair[1]
             menu_item_object = MenuItem.objects.get(server_primary_key=menu_item_id)
-            invoice_sale_to_menu_items_object = InvoicesSalesToMenuItem.objects.filter(invoice_sales=invoice_object, menu_item=menu_item_object, numbers=menu_item_numbers).first()
+            invoice_sale_to_menu_items_object = InvoicesSalesToMenuItem.objects.filter(invoice_sales=invoice_object,
+                                                                                       menu_item=menu_item_object,
+                                                                                       numbers=menu_item_numbers).first()
             invoice_sale_to_menu_items_object.delete()
             invoice_object.total_price -= int(menu_item_object.price) * int(menu_item_numbers)
             invoice_object.save()
@@ -835,12 +842,78 @@ def settle_invoice_sale(request):
     invoice_object.is_settled = 1
     invoice_object.cash = int(cash)
     invoice_object.pos = int(pos)
-    invoice_object.settle_time = datetime.now()
+    invoice_object.settle_time = datetime.datetime.now()
     invoice_object.save()
 
     return JsonResponse({"response_code": 2})
 
 
+@csrf_exempt
+def close_cash(request):
+    if request.method != "POST":
+        return JsonResponse({"response_code": 4, "error_msg": METHOD_NOT_ALLOWED})
+    now = datetime.datetime.now()
+    rec_data = json.loads(request.read().decode('utf-8'))
+    branch_id = rec_data['branch_id']
+    username = rec_data['username']
+    if 'night_report_inputs' not in rec_data.keys():
+        night_report_inputs = {
+            "current_money_in_cash": 0,
+            "income_report": 0,
+            "outcome_report": 0,
+            "event_tickets": 0
+        }
+    else:
+        night_report_inputs = rec_data['night_report_inputs']
+
+    if not username:
+        return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
+    if not branch_id:
+        return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
+
+    if night_report_inputs['income_report'] == "" or night_report_inputs['outcome_report'] == "" \
+            or night_report_inputs['event_tickets'] == "" or night_report_inputs['current_money_in_cash'] == "":
+        return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
+
+    branch_obj = Branch.objects.get(pk=branch_id)
+    user_object = Employee.objects.filter(phone=username).first()
+    current_cash = Cash.objects.filter(branch=branch_obj, is_close=0)
+
+    if current_cash.count() == 1:
+        all_invoices_from_this_cash = InvoiceSales.objects.filter(cash_desk=current_cash.first(), is_settled=False,
+                                                                  is_deleted=False)
+        if all_invoices_from_this_cash.count():
+            return JsonResponse({"response_code": 3, 'error_msg': UNSETTLED_INVOICE})
+        current_cash_obj = current_cash.first()
+        current_cash_obj.is_close = 1
+        current_cash_obj.employee = user_object
+        current_cash_obj.ended_date_time = now
+        current_cash_obj.current_money_in_cash = night_report_inputs['current_money_in_cash']
+        current_cash_obj.income_report = night_report_inputs['income_report']
+        current_cash_obj.outcome_report = night_report_inputs['outcome_report']
+        current_cash_obj.event_tickets = night_report_inputs['event_tickets']
+        current_cash_obj.save()
+        return JsonResponse({"response_code": 2})
+    else:
+        return JsonResponse({"response_code": 3, 'error_msg': DUPLICATE_CASH})
+
+
+@csrf_exempt
+def open_cash(request):
+    if request.method != "POST":
+        return JsonResponse({"response_code": 4, "error_msg": METHOD_NOT_ALLOWED})
+    rec_data = json.loads(request.read().decode('utf-8'))
+    branch_id = rec_data['branch']
+    cash_server_id = rec_data['cash_server_id']
+    if not branch_id:
+        return JsonResponse({"response_code": 3, "error_msg": DATA_REQUIRE})
+
+    branch_obj = Branch.objects.get(server_primary_key=branch_id)
+    Cash(branch=branch_obj, server_primary_key=cash_server_id).save()
+
+    return JsonResponse({"response_code": 2})
+
+sync_branch_with_server()
 sync_members_with_server()
 sync_menu_category_with_server()
 sync_menu_item_with_server()
@@ -849,7 +922,6 @@ sync_printer_to_category_with_server()
 sync_table_category_with_server()
 sync_table_with_server()
 sync_employee_with_server()
-sync_branch_with_server()
 sync_cash_with_server()
 sync_invoice_sale_with_server()
 sync_reserve_with_server()
