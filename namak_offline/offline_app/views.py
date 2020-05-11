@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.http import JsonResponse
 from offline_app.models import *
-import requests, json, jdatetime, datetime
+import requests, json, jdatetime
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
 
@@ -852,7 +852,7 @@ def settle_invoice_sale(request):
 def close_cash(request):
     if request.method != "POST":
         return JsonResponse({"response_code": 4, "error_msg": METHOD_NOT_ALLOWED})
-    now = datetime.datetime.now()
+    now = datetime.now()
     rec_data = json.loads(request.read().decode('utf-8'))
     branch_id = rec_data['branch_id']
     username = rec_data['username']
