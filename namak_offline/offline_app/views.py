@@ -31,8 +31,8 @@ def request_handler(method, url, payload=None):
 
 
 def sync_members_with_server():
-    Member.objects.all().delete()
-    response = request_handler("GET", BASE_URL + "api/offline/list/member/0/%d/" % BRANCH_ID)
+    last_member = Member.objects.all().last()
+    response = request_handler("GET", BASE_URL + "api/offline/list/member/%d/%d/" % (last_member.server_primary_key, BRANCH_ID))
     json_data = response[0]
     status_code = response[1]
 
