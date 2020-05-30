@@ -376,7 +376,7 @@ angular.module("dashboard")
                         dashboardHttpRequest.sync_with_online()
                             .then(function (data) {
                                 if (data['response_code'] === 2) {
-                                    $window.location.href = BASE_URL_CONFIG.baseUrl + "/dashboard"
+                                    $window.location.href = BASE_URL_CONFIG.baseUrl + "dashboard"
                                 }
                             }, function (error) {
                                 console.log(error);
