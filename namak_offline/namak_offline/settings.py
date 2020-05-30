@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from namak_offline import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,10 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '3rv&ysp%k6v*%^r*@b+nh!zdc#pw+z-#*nlm6v!ne-o&ob8&df'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.DEBUG
 
 ALLOWED_HOSTS = []
-BASE_ONLINE_SERVER_API_URL = "http://127.0.0.1:9001/"
+BASE_ONLINE_SERVER_API_URL = config.BASE_URL
 
 # Application definition
 

@@ -1,7 +1,7 @@
 angular.module('dashboard')
-    .service('namakServerHttpRequest', function namakServerHttpRequest($q, $http, $auth, $cookies) {
+    .service('namakServerHttpRequest', function namakServerHttpRequest($q, $http, $auth, $cookies, BASE_URL_CONFIG) {
         return {
-            'API_URL': "http://127.0.0.1:9001/",
+            'API_URL': BASE_URL_CONFIG.baseUrl,
             'use_session': false,
             'authenticated': null,
             'authPromise': null,

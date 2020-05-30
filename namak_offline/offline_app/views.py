@@ -4,8 +4,9 @@ from offline_app.models import *
 import requests, json, jdatetime
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
+from namak_offline import config
 
-BASE_URL = "http://127.0.0.1:9001/"
+BASE_URL = config.BASE_URL
 METHODE_NOT_ALLOWED = "This method is not allowed."
 PAYLOAD_EMPTY = "Payload is empty!"
 DATA_REQUIRE = "Data required!"

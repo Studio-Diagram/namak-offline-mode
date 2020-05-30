@@ -1,5 +1,5 @@
 angular.module("dashboard")
-    .controller("dashboardCtrl", function ($scope, $rootScope, $filter, $state, $interval, $http, $location, $timeout, dashboardHttpRequest, $window, namakServerHttpRequest, $transitions) {
+    .controller("dashboardCtrl", function ($scope, $rootScope, $filter, $state, $interval, $http, $location, $timeout, dashboardHttpRequest, $window, namakServerHttpRequest, $transitions, BASE_URL_CONFIG) {
         var initialize = function () {
             if ($location.search().user) {
                 localStorage.user = JSON.stringify($location.search().user);
@@ -376,7 +376,7 @@ angular.module("dashboard")
                         dashboardHttpRequest.sync_with_online()
                             .then(function (data) {
                                 if (data['response_code'] === 2) {
-                                    $window.location.href = "http://127.0.0.1:9001/dashboard"
+                                    $window.location.href = BASE_URL_CONFIG.baseUrl + "/dashboard"
                                 }
                             }, function (error) {
                                 console.log(error);
