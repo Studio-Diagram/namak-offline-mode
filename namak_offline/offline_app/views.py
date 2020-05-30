@@ -843,7 +843,7 @@ def settle_invoice_sale(request):
     invoice_object.is_settled = 1
     invoice_object.cash = int(cash)
     invoice_object.pos = int(pos)
-    invoice_object.settle_time = datetime.datetime.now()
+    invoice_object.settle_time = datetime.now()
     invoice_object.save()
 
     return JsonResponse({"response_code": 2})
@@ -913,6 +913,7 @@ def open_cash(request):
     Cash(branch=branch_obj, server_primary_key=cash_server_id).save()
 
     return JsonResponse({"response_code": 2})
+
 
 sync_branch_with_server()
 sync_members_with_server()

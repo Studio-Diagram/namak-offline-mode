@@ -302,5 +302,5 @@ myApp.directive('generalModal', function () {
 });
 
 angular.module('dashboard').constant('BASE_URL_CONFIG', {
-  baseUrl: "http://127.0.0.1:9001/"
+  baseUrl: "https://namak.works/"
 });
